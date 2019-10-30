@@ -92,7 +92,7 @@ void loop(void) {
   
   Serial.print("Compensated humidity=");
   Serial.print(compensated_RH, 1);
-  Serial.print("(%RH)");
+  Serial.println("(%RH)");
   
   float dew_point;
   err = barometricSensor.get_dew_point(temperature, humidity, &dew_point);
