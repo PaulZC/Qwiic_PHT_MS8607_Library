@@ -1,12 +1,12 @@
 /*
   Reading humidity from the MS8607
   By: PaulZC
+  Date: November 28th, 2019
 
   Based extensively on:
   Reading barometric pressure from the MS5637
   By: Nathan Seidle
   SparkFun Electronics
-  Date: April 13th, 2018
   License: MIT. See license file for more information but you can
   basically do whatever you want with this code.
 
@@ -15,25 +15,21 @@
   learn from you.
 
   Feel like supporting open source hardware?
-  Buy a board from SparkFun! https://www.sparkfun.com/products/14688
+  Buy a board from SparkFun!
 
-  This example prints the current pressure in hPa and temperature in C.
-
-  Hardware Connections:
-  Attach the Qwiic Shield to your Arduino/Photon/ESP32 or other
-  Plug the sensor onto the shield
-  Serial.print it out at 9600 baud to serial monitor.
+  This example reads and displays the humidity and temperature from the MS8607.
+  It also displays the temperature-compensated humidity and the dew point.
 */
 
 #include <Wire.h>
 
-#include "MS8607_Library.h"
+#include <MS8607_Library.h>
 
 MS8607 barometricSensor;
 
 void setup(void) {
   Serial.begin(9600);
-  Serial.println("Qwiic PHT Sensor MS8607 Example");
+  Serial.println("Qwiic PHT Sensor MS8607 Example - Humidity");
 
   Wire.begin();
 
@@ -43,12 +39,14 @@ void setup(void) {
     while(1);
   }
 
-  // Example: set the humidity resolution to 10 bits
-  int err = barometricSensor.set_humidity_resolution(MS8607_humidity_resolution_10b);
+  // Example: set the humidity resolution
+  //int err = barometricSensor.set_humidity_resolution(MS8607_humidity_resolution_8b); // 8 bits
+  //int err = barometricSensor.set_humidity_resolution(MS8607_humidity_resolution_10b); // 10 bits
+  //int err = barometricSensor.set_humidity_resolution(MS8607_humidity_resolution_11b); // 11 bits
+  int err = barometricSensor.set_humidity_resolution(MS8607_humidity_resolution_12b); // 12 bits
   if (err != MS8607_status_ok)
   {
-    Serial.println("Problem setting the MS8607 sensor humidity resolution.");
-    Serial.print("Error code = ");
+    Serial.print("Problem setting the MS8607 sensor humidity resolution. Error code = ");
     Serial.println(err);
     Serial.println("Freezing.");
     while(1);
@@ -59,8 +57,7 @@ void setup(void) {
   err = barometricSensor.disable_heater();
   if (err != MS8607_status_ok)
   {
-    Serial.println("Problem disabling the MS8607 humidity sensor heater.");
-    Serial.print("Error code = ");
+    Serial.print("Problem disabling the MS8607 humidity sensor heater. Error code = ");
     Serial.println(err);
     Serial.println("Freezing.");
     while(1);
@@ -76,37 +73,39 @@ void loop(void) {
   Serial.print(humidity, 1);
   Serial.print("(%RH)");
 
-  Serial.print("  Temperature=");
+  Serial.print(" Temperature=");
   Serial.print(temperature, 1);
-  Serial.println("(C)");
+  Serial.print("(C)");
 
   float compensated_RH;
   int err = barometricSensor.get_compensated_humidity(temperature, humidity, &compensated_RH);
   if (err != MS8607_status_ok)
   {
-    Serial.println("Problem getting the MS8607 compensated humidity.");
-    Serial.print("Error code = ");
+    Serial.println();
+    Serial.print("Problem getting the MS8607 compensated humidity. Error code = ");
     Serial.println(err);
     return;
   }
   
-  Serial.print("Compensated humidity=");
+  Serial.print(" Compensated humidity=");
   Serial.print(compensated_RH, 1);
-  Serial.println("(%RH)");
+  Serial.print("(%RH)");
   
   float dew_point;
   err = barometricSensor.get_dew_point(temperature, humidity, &dew_point);
   if (err != MS8607_status_ok)
   {
-    Serial.println("Problem getting the MS8607 dew point.");
-    Serial.print("Error code = ");
+    Serial.println();
+    Serial.print("Problem getting the MS8607 dew point. Error code = ");
     Serial.println(err);
     return;
   }
   
-  Serial.print("Dew point=");
+  Serial.print(" Dew point=");
   Serial.print(dew_point, 1);
-  Serial.println("(C)");
+  Serial.print("(C)");
 
-  delay(10);
+  Serial.println();
+
+  delay(500);
 }

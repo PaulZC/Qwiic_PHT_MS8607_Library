@@ -1,17 +1,21 @@
 /*
   Reading barometric pressure from the MS8607
   By: PaulZC
+  Date: November 28th, 2019
 
   Based extensively on:
   Reading barometric pressure from the MS5637
   By: Nathan Seidle
   SparkFun Electronics
-  Date: April 13th, 2018
   License: MIT. See license file for more information but you can
   basically do whatever you want with this code.
 
+  The original library and example code was written by TEConnectivity,
+  the company that made the sensor. Way to go TE! May other companies
+  learn from you.
+
   Feel like supporting open source hardware?
-  Buy a board from SparkFun! https://www.sparkfun.com/products/14688
+  Buy a board from SparkFun!
 
   This example shows how to take the absolute pressure from the sensor and convert it to
   sea level adjusted pressure, or the pressure that you would see from a weather underground station
@@ -36,7 +40,7 @@
 
 #include <Wire.h>
 
-#include "MS8607_Library.h"
+#include <MS8607_Library.h>
 
 MS8607 barometricSensor;
 

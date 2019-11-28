@@ -1,12 +1,12 @@
 /*
   Reading barometric pressure from the MS8607
   By: PaulZC
+  Date: November 28th, 2019
 
   Based extensively on:
   Reading barometric pressure from the MS5637
   By: Nathan Seidle
   SparkFun Electronics
-  Date: April 13th, 2018
   License: MIT. See license file for more information but you can
   basically do whatever you want with this code.
 
@@ -15,19 +15,14 @@
   learn from you.
 
   Feel like supporting open source hardware?
-  Buy a board from SparkFun! https://www.sparkfun.com/products/14688
+  Buy a board from SparkFun!
 
   This example prints the current pressure in hPa and temperature in C.
-
-  Hardware Connections:
-  Attach the Qwiic Shield to your Arduino/Photon/ESP32 or other
-  Plug the sensor onto the shield
-  Serial.print it out at 9600 baud to serial monitor.
 */
 
 #include <Wire.h>
 
-#include "MS8607_Library.h"
+#include <MS8607_Library.h>
 
 MS8607 barometricSensor;
 
@@ -59,5 +54,5 @@ void loop(void) {
 
   Serial.println();
 
-  delay(10);
+  delay(500);
 }
