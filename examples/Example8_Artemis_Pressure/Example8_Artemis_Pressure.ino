@@ -1,7 +1,7 @@
 /*
   Reading barometric pressure from the MS8607
   By: PaulZC
-  Date: November 28th, 2019
+  Date: January 28th, 2020
 
   Based extensively on:
   Reading barometric pressure from the MS5637
@@ -43,8 +43,13 @@ void setup(void) {
 
   if (barometricSensor.begin(myWire) == false)
   {
-    Serial.println("MS8607 sensor did not respond. Please check wiring.");
-    while(1);
+    Serial.println("MS8607 sensor did not respond. Trying again...");
+    if (barometricSensor.begin(myWire) == false)
+    {
+      Serial.println("MS8607 sensor did not respond. Please check wiring.");
+      while(1)
+        ;
+    }
   }
 }
 
