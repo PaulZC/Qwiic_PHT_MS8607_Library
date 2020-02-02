@@ -688,6 +688,7 @@ enum MS8607_status MS8607::psensor_reset(void) {
   _i2cPort->beginTransmission((uint8_t)MS8607_PSENSOR_ADDR);
   _i2cPort->write(PSENSOR_RESET_COMMAND);
   _i2cPort->endTransmission();
+  return MS8607_status_ok;
 }
 
 /*
