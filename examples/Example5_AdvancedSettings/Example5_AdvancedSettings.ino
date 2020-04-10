@@ -35,8 +35,9 @@ MS8607 barometricSensor;
 float history[HISTORY_SIZE];
 byte historySpot;
 
-void setup(void) {
-  Serial.begin(9600);
+void setup(void)
+{
+  Serial.begin(115200);
   Serial.println("Qwiic PHT Sensor MS8607 Example");
 
   //If your platform has multiple Wire ports you can pass the port to
@@ -53,7 +54,7 @@ void setup(void) {
   //      ;
   //  }
   //}
-  
+
   //Default is Wire and is optional when you call .begin()
   Wire.begin();
   Wire.setClock(400000); //Communicate at faster 400kHz I2C
@@ -63,31 +64,33 @@ void setup(void) {
     if (barometricSensor.begin() == false)
     {
       Serial.println("MS8607 sensor did not respond. Please check wiring.");
-      while(1)
+      while (1)
         ;
     }
   }
 
   //The sensor has 6 resolution levels. The higher the resolution the longer each
   //reading takes to complete.
-//  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_256); //1ms per reading, 0.11mbar resolution
-//  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_512); //2ms per reading, 0.062mbar resolution
-//  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_1024); //3ms per reading, 0.039mbar resolution
-//  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_2048); //5ms per reading, 0.028mbar resolution
-//  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_4096); //9ms per reading, 0.021mbar resolution
+  //  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_256); //1ms per reading, 0.11mbar resolution
+  //  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_512); //2ms per reading, 0.062mbar resolution
+  //  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_1024); //3ms per reading, 0.039mbar resolution
+  //  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_2048); //5ms per reading, 0.028mbar resolution
+  //  barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_4096); //9ms per reading, 0.021mbar resolution
   barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_8192); //17ms per reading, 0.016mbar resolution
 }
 
-void loop(void) {
+void loop(void)
+{
 
   float temperature = barometricSensor.getTemperature();
   float pressure = barometricSensor.getPressure();
 
   history[historySpot] = pressure;
-  if (historySpot++ == HISTORY_SIZE) historySpot = 0;
+  if (historySpot++ == HISTORY_SIZE)
+    historySpot = 0;
 
   float avgPressure = 0.0;
-  for (int x = 0 ; x < HISTORY_SIZE ; x++)
+  for (int x = 0; x < HISTORY_SIZE; x++)
     avgPressure += history[x];
   avgPressure /= (float)HISTORY_SIZE;
 
