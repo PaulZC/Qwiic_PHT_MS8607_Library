@@ -122,10 +122,6 @@ bool MS8607::begin(TwoWire &wirePort)
 {
   _i2cPort = &wirePort; //Grab which port the user wants us to use
 
-  //We expect caller to begin their I2C port, with the speed of their choice external to the library
-  //But if they forget, we start the hardware here.
-  _i2cPort->begin();
-
   //Check connection
   if (isConnected() == false)
     return (false);
