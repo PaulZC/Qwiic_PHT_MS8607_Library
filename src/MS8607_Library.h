@@ -48,6 +48,8 @@
 #include "WProgram.h"
 #endif
 
+#include "Wire.h"
+
 enum MS8607_humidity_i2c_master_mode
 {
        MS8607_i2c_hold,
