@@ -30,8 +30,9 @@ MS8607 barometricSensor;
 
 float startingPressure = 0.0;
 
-void setup(void) {
-  Serial.begin(9600);
+void setup(void)
+{
+  Serial.begin(115200);
   Serial.println("Qwiic PHT Sensor MS8607 Example");
 
   Wire.begin();
@@ -42,26 +43,27 @@ void setup(void) {
     if (barometricSensor.begin() == false)
     {
       Serial.println("MS8607 sensor did not respond. Please check wiring.");
-      while(1)
+      while (1)
         ;
     }
   }
 
   //Set the resolution of the sensor to the highest level of resolution: 0.016 mbar
   barometricSensor.set_pressure_resolution(MS8607_pressure_resolution_osr_8192);
-  
+
   //Take 16 readings and average them
   startingPressure = 0.0;
-  for (int x = 0 ; x < 16 ; x++)
+  for (int x = 0; x < 16; x++)
     startingPressure += barometricSensor.getPressure();
   startingPressure /= (float)16;
 
   Serial.print("Starting pressure=");
   Serial.print(startingPressure);
-  Serial.println("hPa");    
+  Serial.println("hPa");
 }
 
-void loop(void) {
+void loop(void)
+{
 
   float currentPressure = barometricSensor.getPressure();
 

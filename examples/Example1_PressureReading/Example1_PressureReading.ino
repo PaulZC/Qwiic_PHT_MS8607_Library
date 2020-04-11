@@ -26,8 +26,9 @@
 
 MS8607 barometricSensor;
 
-void setup(void) {
-  Serial.begin(9600);
+void setup(void)
+{
+  Serial.begin(115200);
   Serial.println("Qwiic PHT Sensor MS8607 Example");
 
   Wire.begin();
@@ -38,13 +39,14 @@ void setup(void) {
     if (barometricSensor.begin() == false)
     {
       Serial.println("MS8607 sensor did not respond. Please check wiring.");
-      while(1)
+      while (1)
         ;
     }
   }
 }
 
-void loop(void) {
+void loop(void)
+{
 
   float temperature = barometricSensor.getTemperature();
   float pressure = barometricSensor.getPressure();

@@ -27,8 +27,9 @@
 
 MS8607 barometricSensor;
 
-void setup(void) {
-  Serial.begin(9600);
+void setup(void)
+{
+  Serial.begin(115200);
   Serial.println("Qwiic PHT Sensor MS8607 Example - Humidity");
 
   Wire.begin();
@@ -39,7 +40,7 @@ void setup(void) {
     if (barometricSensor.begin() == false)
     {
       Serial.println("MS8607 sensor did not respond. Please check wiring.");
-      while(1)
+      while (1)
         ;
     }
   }
@@ -54,9 +55,10 @@ void setup(void) {
     Serial.print("Problem setting the MS8607 sensor humidity resolution. Error code = ");
     Serial.println(err);
     Serial.println("Freezing.");
-    while(1);
+    while (1)
+      ;
   }
-  
+
   // Turn the humidity sensor heater OFF
   // The TE examples say that get_compensated_humidity and get_dew_point will only work if the heater is OFF
   err = barometricSensor.disable_heater();
@@ -65,11 +67,13 @@ void setup(void) {
     Serial.print("Problem disabling the MS8607 humidity sensor heater. Error code = ");
     Serial.println(err);
     Serial.println("Freezing.");
-    while(1);
+    while (1)
+      ;
   }
 }
 
-void loop(void) {
+void loop(void)
+{
 
   float humidity = barometricSensor.getHumidity();
   float temperature = barometricSensor.getTemperature();
@@ -91,11 +95,11 @@ void loop(void) {
     Serial.println(err);
     return;
   }
-  
+
   Serial.print(" Compensated humidity=");
   Serial.print(compensated_RH, 1);
   Serial.print("(%RH)");
-  
+
   float dew_point;
   err = barometricSensor.get_dew_point(temperature, humidity, &dew_point);
   if (err != MS8607_status_ok)
@@ -105,7 +109,7 @@ void loop(void) {
     Serial.println(err);
     return;
   }
-  
+
   Serial.print(" Dew point=");
   Serial.print(dew_point, 1);
   Serial.print("(C)");

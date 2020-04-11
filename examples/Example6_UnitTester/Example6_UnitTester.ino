@@ -26,18 +26,18 @@
 
 MS8607 barometricSensor;
 
-
-void setup(void) {
-  Serial.begin(9600);
+void setup(void)
+{
+  Serial.begin(115200);
   Serial.println("Begin");
 
   Wire.begin();
 
   barometricSensor.begin(Wire);
-
 }
 
-void loop(void) {
+void loop(void)
+{
 
   if (barometricSensor.isConnected())
   {

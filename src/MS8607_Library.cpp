@@ -29,10 +29,10 @@ const uint8_t MS8607_HSENSOR_ADDR = 0x40; // 0b1000000
 #define HUMIDITY_COEFF_ADD (-6)
 
 // Conversion timings
-#define HSENSOR_CONVERSION_TIME_12b 160
-#define HSENSOR_CONVERSION_TIME_10b 50
-#define HSENSOR_CONVERSION_TIME_8b 30
-#define HSENSOR_CONVERSION_TIME_11b 90
+#define HSENSOR_CONVERSION_TIME_12b 16
+#define HSENSOR_CONVERSION_TIME_10b 5
+#define HSENSOR_CONVERSION_TIME_8b 3
+#define HSENSOR_CONVERSION_TIME_11b 9
 
 #define HSENSOR_RESET_TIME 15 // ms value
 
@@ -105,9 +105,10 @@ enum MS8607_pressure_resolution psensor_resolution_osr;
 
 MS8607::MS8607(void)
     : psensor_conversion_time{
-          PSENSOR_CONVERSION_TIME_OSR_256,  PSENSOR_CONVERSION_TIME_OSR_512,
+          PSENSOR_CONVERSION_TIME_OSR_256, PSENSOR_CONVERSION_TIME_OSR_512,
           PSENSOR_CONVERSION_TIME_OSR_1024, PSENSOR_CONVERSION_TIME_OSR_2048,
-          PSENSOR_CONVERSION_TIME_OSR_4096, PSENSOR_CONVERSION_TIME_OSR_8192} {
+          PSENSOR_CONVERSION_TIME_OSR_4096, PSENSOR_CONVERSION_TIME_OSR_8192}
+{
 
   hsensor_conversion_time = HSENSOR_CONVERSION_TIME_12b;
   hsensor_i2c_master_mode = MS8607_i2c_no_hold;
@@ -117,25 +118,23 @@ MS8607::MS8607(void)
 /*
   \brief Perform initial configuration. Has to be called once.
 */
-bool MS8607::begin(TwoWire &wirePort) {
+bool MS8607::begin(TwoWire &wirePort)
+{
   _i2cPort = &wirePort; //Grab which port the user wants us to use
 
-  //We expect caller to begin their I2C port, with the speed of their choice external to the library
-  //But if they forget, we start the hardware here.
-  _i2cPort->begin();
-
   //Check connection
-  if(isConnected() == false) return(false);
-  
+  if (isConnected() == false)
+    return (false);
+
   //Get EEPROM coefficients
   enum MS8607_status status = psensor_read_eeprom();
   if (status != MS8607_status_ok)
-  return(false);
+    return (false);
 
   //Set resolution to the highest level (17 ms per reading)
   psensor_resolution_osr = MS8607_pressure_resolution_osr_8192;
-  
-  return(true);
+
+  return (true);
 }
 
 /*
@@ -145,7 +144,8 @@ bool MS8607::begin(TwoWire &wirePort) {
        - true : Device is present
        - false : Device is not acknowledging I2C address
 */
-bool MS8607::isConnected(void) {
+bool MS8607::isConnected(void)
+{
   return (hsensor_is_connected() && psensor_is_connected());
 }
 
@@ -157,7 +157,8 @@ bool MS8607::isConnected(void) {
        - MS8607_status_i2c_transfer_error : Problem with i2c transfer
        - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
-enum MS8607_status MS8607::reset(void) {
+enum MS8607_status MS8607::reset(void)
+{
   enum MS8607_status status;
 
   status = hsensor_reset();
@@ -179,7 +180,8 @@ enum MS8607_status MS8607::reset(void) {
         - MS8607_status_ok
 */
 void MS8607::set_humidity_i2c_master_mode(
-    enum MS8607_humidity_i2c_master_mode mode) {
+    enum MS8607_humidity_i2c_master_mode mode)
+{
   hsensor_i2c_master_mode = mode;
 }
 
@@ -195,7 +197,8 @@ void MS8607::set_humidity_i2c_master_mode(
         - MS8607_status_i2c_transfer_error : Problem with i2c transfer
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
-enum MS8607_status MS8607::get_battery_status(enum MS8607_battery_status *bat) {
+enum MS8607_status MS8607::get_battery_status(enum MS8607_battery_status *bat)
+{
   enum MS8607_status status;
   uint8_t reg_value;
 
@@ -219,7 +222,8 @@ enum MS8607_status MS8607::get_battery_status(enum MS8607_battery_status *bat) {
         - MS8607_status_i2c_transfer_error : Problem with i2c transfer
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
-enum MS8607_status MS8607::enable_heater(void) {
+enum MS8607_status MS8607::enable_heater(void)
+{
   enum MS8607_status status;
   uint8_t reg_value;
 
@@ -244,7 +248,8 @@ enum MS8607_status MS8607::enable_heater(void) {
         - MS8607_status_i2c_transfer_error : Problem with i2c transfer
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
-enum MS8607_status MS8607::disable_heater(void) {
+enum MS8607_status MS8607::disable_heater(void)
+{
   enum MS8607_status status;
   uint8_t reg_value;
 
@@ -274,7 +279,8 @@ enum MS8607_status MS8607::disable_heater(void) {
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
 enum MS8607_status
-MS8607::get_heater_status(enum MS8607_heater_status *heater) {
+MS8607::get_heater_status(enum MS8607_heater_status *heater)
+{
   enum MS8607_status status;
   uint8_t reg_value;
 
@@ -305,7 +311,8 @@ MS8607::get_heater_status(enum MS8607_heater_status *heater) {
         - MS8607_status_crc_error : CRC check error
 */
 enum MS8607_status
-MS8607::read_temperature_pressure_humidity(float *t, float *p, float *h) {
+MS8607::read_temperature_pressure_humidity(float *t, float *p, float *h)
+{
   enum MS8607_status status;
 
   status = psensor_read_pressure_and_temperature(t, p);
@@ -328,7 +335,8 @@ MS8607::read_temperature_pressure_humidity(float *t, float *p, float *h) {
         - true : Device is present
         - false : Device is not acknowledging I2C address
 */
-bool MS8607::hsensor_is_connected(void) {
+bool MS8607::hsensor_is_connected(void)
+{
   _i2cPort->beginTransmission((uint8_t)MS8607_HSENSOR_ADDR);
   return (_i2cPort->endTransmission() == 0);
 }
@@ -341,7 +349,8 @@ bool MS8607::hsensor_is_connected(void) {
         - MS8607_status_i2c_transfer_error : Problem with i2c transfer
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
-enum MS8607_status MS8607::hsensor_reset(void) {
+enum MS8607_status MS8607::hsensor_reset(void)
+{
   enum MS8607_status status;
 
   _i2cPort->beginTransmission((uint8_t)MS8607_HSENSOR_ADDR);
@@ -367,13 +376,15 @@ enum MS8607_status MS8607::hsensor_reset(void) {
         - MS8607_status_ok : CRC check is OK
         - MS8607_status_crc_error : CRC check error
 */
-enum MS8607_status MS8607::hsensor_crc_check(uint16_t value, uint8_t crc) {
+enum MS8607_status MS8607::hsensor_crc_check(uint16_t value, uint8_t crc)
+{
   uint32_t polynom = 0x988000; // x^8 + x^5 + x^4 + 1
   uint32_t msb = 0x800000;
   uint32_t mask = 0xFF8000;
   uint32_t result = (uint32_t)value << 8; // Pad with zeros as specified in spec
 
-  while (msb != 0x80) {
+  while (msb != 0x80)
+  {
 
     // Check if msb of current value is 1 and apply XOR mask
     if (result & msb)
@@ -400,7 +411,8 @@ enum MS8607_status MS8607::hsensor_crc_check(uint16_t value, uint8_t crc) {
         - MS8607_status_i2c_transfer_error : Problem with i2c transfer
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
-enum MS8607_status MS8607::hsensor_read_user_register(uint8_t *value) {
+enum MS8607_status MS8607::hsensor_read_user_register(uint8_t *value)
+{
   enum MS8607_status status;
   uint8_t i2c_status;
   uint8_t buffer[1];
@@ -438,7 +450,8 @@ enum MS8607_status MS8607::hsensor_read_user_register(uint8_t *value) {
         - MS8607_status_i2c_transfer_error : Problem with i2c transfer
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
-enum MS8607_status MS8607::hsensor_write_user_register(uint8_t value) {
+enum MS8607_status MS8607::hsensor_write_user_register(uint8_t value)
+{
   enum MS8607_status status;
   uint8_t i2c_status;
   uint8_t reg;
@@ -482,21 +495,29 @@ enum MS8607_status MS8607::hsensor_write_user_register(uint8_t value) {
         - MS8607_status_crc_error : CRC check error
 */
 enum MS8607_status
-MS8607::set_humidity_resolution(enum MS8607_humidity_resolution res) {
+MS8607::set_humidity_resolution(enum MS8607_humidity_resolution res)
+{
   enum MS8607_status status;
   uint8_t reg_value, tmp = 0;
   uint32_t conversion_time = HSENSOR_CONVERSION_TIME_12b;
 
-  if (res == MS8607_humidity_resolution_12b) {
+  if (res == MS8607_humidity_resolution_12b)
+  {
     tmp = HSENSOR_USER_REG_RESOLUTION_12b;
     conversion_time = HSENSOR_CONVERSION_TIME_12b;
-  } else if (res == MS8607_humidity_resolution_10b) {
+  }
+  else if (res == MS8607_humidity_resolution_10b)
+  {
     tmp = HSENSOR_USER_REG_RESOLUTION_10b;
     conversion_time = HSENSOR_CONVERSION_TIME_10b;
-  } else if (res == MS8607_humidity_resolution_8b) {
+  }
+  else if (res == MS8607_humidity_resolution_8b)
+  {
     tmp = HSENSOR_USER_REG_RESOLUTION_8b;
     conversion_time = HSENSOR_CONVERSION_TIME_8b;
-  } else if (res == MS8607_humidity_resolution_11b) {
+  }
+  else if (res == MS8607_humidity_resolution_11b)
+  {
     tmp = HSENSOR_USER_REG_RESOLUTION_11b;
     conversion_time = HSENSOR_CONVERSION_TIME_11b;
   }
@@ -528,7 +549,8 @@ MS8607::set_humidity_resolution(enum MS8607_humidity_resolution res) {
         - MS8607_status_crc_error : CRC check error
 */
 enum MS8607_status
-MS8607::hsensor_humidity_conversion_and_read_adc(uint16_t *adc) {
+MS8607::hsensor_humidity_conversion_and_read_adc(uint16_t *adc)
+{
   enum MS8607_status status = MS8607_status_ok;
   uint8_t i2c_status;
   uint16_t _adc;
@@ -539,17 +561,21 @@ MS8607::hsensor_humidity_conversion_and_read_adc(uint16_t *adc) {
   /* Read data */
   _i2cPort->beginTransmission((uint8_t)MS8607_HSENSOR_ADDR);
 
-  if (hsensor_i2c_master_mode == MS8607_i2c_hold) {
+  if (hsensor_i2c_master_mode == MS8607_i2c_hold)
+  {
     _i2cPort->write(HSENSOR_READ_HUMIDITY_W_HOLD_COMMAND);
     i2c_status = _i2cPort->endTransmission();
-  } else {
+  }
+  else
+  {
     _i2cPort->write(HSENSOR_READ_HUMIDITY_WO_HOLD_COMMAND);
     i2c_status = _i2cPort->endTransmission();
     // delay depending on resolution
     delay(hsensor_conversion_time);
   }
   _i2cPort->requestFrom((uint8_t)MS8607_HSENSOR_ADDR, 3U);
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++)
+  {
     buffer[i] = _i2cPort->read();
   }
 
@@ -566,8 +592,8 @@ MS8607::hsensor_humidity_conversion_and_read_adc(uint16_t *adc) {
 
   // compute CRC
   status = hsensor_crc_check(_adc, crc);
-   if (status != MS8607_status_ok)
-     return status;
+  if (status != MS8607_status_ok)
+    return status;
 
   *adc = _adc;
 
@@ -585,7 +611,8 @@ MS8607::hsensor_humidity_conversion_and_read_adc(uint16_t *adc) {
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
         - MS8607_status_crc_error : CRC check error
 */
-enum MS8607_status MS8607::hsensor_read_relative_humidity(float *humidity) {
+enum MS8607_status MS8607::hsensor_read_relative_humidity(float *humidity)
+{
   enum MS8607_status status;
   uint16_t adc;
 
@@ -616,7 +643,8 @@ enum MS8607_status MS8607::hsensor_read_relative_humidity(float *humidity) {
 */
 enum MS8607_status
 MS8607::get_compensated_humidity(float temperature, float relative_humidity,
-                                 float *compensated_humidity) {
+                                 float *compensated_humidity)
+{
   if (hsensor_heater_on)
     return MS8607_status_heater_on_error;
 
@@ -643,7 +671,8 @@ MS8607::get_compensated_humidity(float temperature, float relative_humidity,
 */
 enum MS8607_status MS8607::get_dew_point(float temperature,
                                          float relative_humidity,
-                                         float *dew_point) {
+                                         float *dew_point)
+{
   double partial_pressure;
 
   if (hsensor_heater_on)
@@ -671,7 +700,8 @@ enum MS8607_status MS8607::get_dew_point(float temperature,
         - true : Device is present
         - false : Device is not acknowledging I2C address
 */
-bool MS8607::psensor_is_connected(void) {
+bool MS8607::psensor_is_connected(void)
+{
   _i2cPort->beginTransmission((uint8_t)MS8607_PSENSOR_ADDR);
   return (_i2cPort->endTransmission() == 0);
 }
@@ -684,7 +714,8 @@ bool MS8607::psensor_is_connected(void) {
         - MS8607_status_i2c_transfer_error : Problem with i2c transfer
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
-enum MS8607_status MS8607::psensor_reset(void) {
+enum MS8607_status MS8607::psensor_reset(void)
+{
   _i2cPort->beginTransmission((uint8_t)MS8607_PSENSOR_ADDR);
   _i2cPort->write(PSENSOR_RESET_COMMAND);
   _i2cPort->endTransmission();
@@ -699,7 +730,8 @@ enum MS8607_status MS8607::psensor_reset(void) {
  
   \return bool : TRUE if CRC is OK, FALSE if KO
 */
-bool MS8607::psensor_crc_check(uint16_t *n_prom, uint8_t crc) {
+bool MS8607::psensor_crc_check(uint16_t *n_prom, uint8_t crc)
+{
   uint8_t cnt, n_bit;
   uint16_t n_rem, crc_read;
 
@@ -708,7 +740,8 @@ bool MS8607::psensor_crc_check(uint16_t *n_prom, uint8_t crc) {
   n_prom[COEFFICIENT_NUMBERS] = 0;
   n_prom[0] = (0x0FFF & (n_prom[0])); // Clear the CRC byte
 
-  for (cnt = 0; cnt < (COEFFICIENT_NUMBERS + 1) * 2; cnt++) {
+  for (cnt = 0; cnt < (COEFFICIENT_NUMBERS + 1) * 2; cnt++)
+  {
 
     // Get next byte
     if (cnt % 2 == 1)
@@ -716,7 +749,8 @@ bool MS8607::psensor_crc_check(uint16_t *n_prom, uint8_t crc) {
     else
       n_rem ^= n_prom[cnt >> 1] >> 8;
 
-    for (n_bit = 8; n_bit > 0; n_bit--) {
+    for (n_bit = 8; n_bit > 0; n_bit--)
+    {
 
       if (n_rem & 0x8000)
         n_rem = (n_rem << 1) ^ 0x3000;
@@ -736,7 +770,8 @@ bool MS8607::psensor_crc_check(uint16_t *n_prom, uint8_t crc) {
   \param[in] MS8607_pressure_resolution : Resolution requested
  
 */
-void MS8607::set_pressure_resolution(enum MS8607_pressure_resolution res) {
+void MS8607::set_pressure_resolution(enum MS8607_pressure_resolution res)
+{
   psensor_resolution_osr = res;
 }
 
@@ -753,7 +788,8 @@ void MS8607::set_pressure_resolution(enum MS8607_pressure_resolution res) {
         - MS8607_status_crc_error : CRC check error on the coefficients
 */
 enum MS8607_status MS8607::psensor_read_eeprom_coeff(uint8_t command,
-                                                     uint16_t *coeff) {
+                                                     uint16_t *coeff)
+{
   enum MS8607_status status;
   uint8_t i2c_status;
   uint8_t buffer[2];
@@ -793,11 +829,13 @@ enum MS8607_status MS8607::psensor_read_eeprom_coeff(uint8_t command,
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
         - MS8607_status_crc_error : CRC check error on the coefficients
 */
-enum MS8607_status MS8607::psensor_read_eeprom(void) {
+enum MS8607_status MS8607::psensor_read_eeprom(void)
+{
   enum MS8607_status status;
   uint8_t i;
 
-  for (i = 0; i < COEFFICIENT_NUMBERS; i++) {
+  for (i = 0; i < COEFFICIENT_NUMBERS; i++)
+  {
     status = psensor_read_eeprom_coeff(PROM_ADDRESS_READ_ADDRESS_0 + i * 2,
                                        eeprom_coeff + i);
     if (status != MS8607_status_ok)
@@ -824,7 +862,8 @@ enum MS8607_status MS8607::psensor_read_eeprom(void) {
         - MS8607_status_no_i2c_acknowledge : I2C did not acknowledge
 */
 enum MS8607_status MS8607::psensor_conversion_and_read_adc(uint8_t cmd,
-                                                           uint32_t *adc) {
+                                                           uint32_t *adc)
+{
   enum MS8607_status status;
   uint8_t i2c_status;
   uint8_t buffer[3];
@@ -878,7 +917,8 @@ enum MS8607_status MS8607::psensor_conversion_and_read_adc(uint8_t cmd,
 */
 enum MS8607_status
 MS8607::psensor_read_pressure_and_temperature(float *temperature,
-                                              float *pressure) {
+                                              float *pressure)
+{
   enum MS8607_status status = MS8607_status_ok;
   uint32_t adc_temperature, adc_pressure;
   int32_t dT, TEMP;
@@ -912,16 +952,20 @@ MS8607::psensor_read_pressure_and_temperature(float *temperature,
                  23);
 
   // Second order temperature compensation
-  if (TEMP < 2000) {
+  if (TEMP < 2000)
+  {
     T2 = (3 * ((int64_t)dT * (int64_t)dT)) >> 33;
     OFF2 = 61 * ((int64_t)TEMP - 2000) * ((int64_t)TEMP - 2000) / 16;
     SENS2 = 29 * ((int64_t)TEMP - 2000) * ((int64_t)TEMP - 2000) / 16;
 
-    if (TEMP < -1500) {
+    if (TEMP < -1500)
+    {
       OFF2 += 17 * ((int64_t)TEMP + 1500) * ((int64_t)TEMP + 1500);
       SENS2 += 9 * ((int64_t)TEMP + 1500) * ((int64_t)TEMP + 1500);
     }
-  } else {
+  }
+  else
+  {
     T2 = (5 * ((int64_t)dT * (int64_t)dT)) >> 38;
     OFF2 = 0;
     SENS2 = 0;
@@ -952,7 +996,7 @@ MS8607::psensor_read_pressure_and_temperature(float *temperature,
 //Returns the latest pressure reading. Will initiate a reading if data is expired
 float MS8607::getPressure()
 {
-  if(pressureHasBeenRead == true)
+  if (pressureHasBeenRead == true)
   {
     //Get a new reading
     read_temperature_pressure_humidity(&globalTemperature, &globalPressure, &globalHumidity);
@@ -960,13 +1004,13 @@ float MS8607::getPressure()
     humidityHasBeenRead = false;
   }
   pressureHasBeenRead = true;
-  return(globalPressure);
+  return (globalPressure);
 }
 
 //Returns the latest temp reading. Will initiate a reading if data is expired
 float MS8607::getTemperature()
 {
-  if(temperatureHasBeenRead == true)
+  if (temperatureHasBeenRead == true)
   {
     //Get a new reading
     read_temperature_pressure_humidity(&globalTemperature, &globalPressure, &globalHumidity);
@@ -974,13 +1018,13 @@ float MS8607::getTemperature()
     humidityHasBeenRead = false;
   }
   temperatureHasBeenRead = true;
-  return(globalTemperature);
+  return (globalTemperature);
 }
 
 //Returns the latest humidity reading. Will initiate a reading if data is expired
 float MS8607::getHumidity()
 {
-  if(humidityHasBeenRead == true)
+  if (humidityHasBeenRead == true)
   {
     //Get a new reading
     read_temperature_pressure_humidity(&globalTemperature, &globalPressure, &globalHumidity);
@@ -988,7 +1032,7 @@ float MS8607::getHumidity()
     temperatureHasBeenRead = false;
   }
   humidityHasBeenRead = true;
-  return(globalHumidity);
+  return (globalHumidity);
 }
 
 // Given a pressure P (mb) taken at a specific altitude (meters),
@@ -997,13 +1041,12 @@ float MS8607::getHumidity()
 // Returns pressure in mb
 double MS8607::adjustToSeaLevel(double absolutePressure, double actualAltitude)
 {
-  return(absolutePressure / pow(1-(actualAltitude/44330.0),5.255));
+  return (absolutePressure / pow(1 - (actualAltitude / 44330.0), 5.255));
 }
 
 // Given a pressure measurement (mb) and the pressure at a baseline (mb),
 // return altitude change (in meters) for the delta in pressures.
 double MS8607::altitudeChange(double currentPressure, double baselinePressure)
 {
-  return(44330.0*(1-pow(currentPressure/baselinePressure,1/5.255)));
+  return (44330.0 * (1 - pow(currentPressure / baselinePressure, 1 / 5.255)));
 }
-
